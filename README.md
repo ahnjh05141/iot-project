@@ -1,3 +1,3 @@
 # IOT project Assignment
 
-made by jaehyun ahn
+Anthony from CAU, Seoul, South Korea
