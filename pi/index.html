@@ -1,0 +1,62 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Raspberry Pi Controller</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="img-container">
+    <img id="cap" src="capture.jpg">
+    <div id="loader">Capturing...</div>
+  </div>
+
+  <button id="capture-btn" onclick="capture()">Capture</button>
+
+  <div class="input-box">
+    <div class="input-inner">
+      <input id="segment" type="text" maxlength="1" placeholder="Enter digit (0–9)" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+      <button onclick="sendSegment()">Send</button>
+    </div>
+  </div>
+
+  <div class="input-box">
+    <div class="input-inner">
+      <input id="lcd" type="text" maxlength="16" placeholder="Enter LCD text (A–Z only)" oninput="this.value=this.value.replace(/[^a-zA-Z ]/g,'')">
+      <button onclick="sendLCD()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    function capture() {
+      const loader = document.getElementById('loader');
+      const img = document.getElementById('cap');
+      loader.style.display = 'flex';
+      img.style.opacity = '0.3';
+      fetch('sender.sh?mode=camera&param=True')
+        .then(() => {
+          setTimeout(() => {
+            img.src = 'capture.jpg?' + Date.now();
+            img.onload = () => {
+              loader.style.display = 'none';
+              img.style.opacity = '1';
+            };
+          }, 500);
+        });
+    }
+
+    function sendSegment() {
+      const val = document.getElementById('segment').value.trim();
+      if (!val) return;
+      fetch(`sender.sh?mode=segment&param=${encodeURIComponent(val)}`);
+      document.getElementById('segment').value = '';
+    }
+
+    function sendLCD() {
+      const text = document.getElementById('lcd').value.trim();
+      if (!text) return;
+      fetch(`sender.sh?mode=lcd&param=${encodeURIComponent(text)}`);
+      document.getElementById('lcd').value = '';
+    }
+  </script>
+</body>
+</html>
